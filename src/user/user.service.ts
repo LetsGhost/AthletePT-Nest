@@ -5,7 +5,6 @@ import { Logger } from '@nestjs/common';
 export class UserService {
   async createUser(userData: any) {
     try {
-        
     } catch (error) {
       Logger.error('Error in creating user', error);
       return {
