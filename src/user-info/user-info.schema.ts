@@ -46,4 +46,4 @@ export class UserInfo extends Document {
   issues: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserInfo);
+export const UserInfoSchema = SchemaFactory.createForClass(UserInfo);
