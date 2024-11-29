@@ -8,12 +8,12 @@ config();
 @Module({
   imports: [
     UserModule,
+    UserInfoModule,
     MongooseModule.forRoot(
       process.env.MONGO_URI
         ? process.env.MONGO_URI
         : (console.log('MONGO_URI is not defined'), process.exit(1)),
     ),
-    UserInfoModule,
   ],
 })
 export class AppModule {}
