@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from './user.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateUserDto } from './Dto/create-user.dto';
@@ -45,7 +45,8 @@ describe('UserService', () => {
         email: 'user@mail.com',
         password: 'password',
       };
-      const result = await service.create(createUserDto, '123');
+      const userInfoId = new Types.ObjectId('674b35a0986bacefaa3d4a12');
+      const result = await service.create(createUserDto, userInfoId);
 
       expect(result).toEqual({
         success: true,
@@ -56,7 +57,7 @@ describe('UserService', () => {
       expect(model.create).toHaveBeenCalledWith({
         ...createUserDto,
         role: 'user',
-        userInfo: '123',
+        userInfo: userInfoId,
       });
     });
   });
