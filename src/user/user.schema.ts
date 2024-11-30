@@ -13,13 +13,14 @@ export class User {
   @Prop({ required: true })
   password: string;
 
+  @Prop({ required: true })
+  role: 'admin' | 'user';
+
   @Prop({ default: Date.now })
   createdAt: Date;
 
   @Prop({ type: Types.ObjectId, ref: 'UserInfo' })
   userInfo: { type: Types.ObjectId; ref: 'UserInfo' };
 }
-
-// TODO: Add a pre hook to hash the password before saving the user to the database.
 
 export const UserSchema = SchemaFactory.createForClass(User);

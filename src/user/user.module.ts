@@ -2,10 +2,28 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './user.schema';
+import { UserSchema, User } from './user.schema';
+import { hash, genSalt } from 'bcrypt';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+  imports: [
+    MongooseModule.forFeatureAsync([
+      {
+        name: 'User',
+        useFactory: () => {
+          const schema = UserSchema;
+
+          schema.pre<User>('save', async function () {
+            const salt = await genSalt(10);
+            const hashedPassword = await hash(this.password, salt);
+
+            this.password = hashedPassword;
+          });
+          return schema;
+        },
+      },
+    ]),
+  ],
   providers: [UserService],
   controllers: [UserController],
 })

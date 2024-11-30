@@ -13,9 +13,16 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
+  async create(
+    createUserDto: CreateUserDto,
+    userInfoId: string,
+  ): Promise<ServiceResponse<User>> {
     try {
-      const createdUser = await this.userModel.create(createUserDto);
+      const createdUser = await this.userModel.create({
+        ...createUserDto,
+        role: 'user',
+        userInfo: userInfoId,
+      });
 
       return {
         success: true,
