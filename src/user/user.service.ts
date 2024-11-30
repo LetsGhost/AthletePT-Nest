@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ServiceResponse } from 'src/common/interfaces/service-response.interface';
 import { CreateUserDto } from './Dto/create-user.dto';
 
@@ -15,7 +15,7 @@ export class UserService {
 
   async create(
     createUserDto: CreateUserDto,
-    userInfoId: string,
+    userInfoId: Types.ObjectId,
   ): Promise<ServiceResponse<User>> {
     try {
       const createdUser = await this.userModel.create({

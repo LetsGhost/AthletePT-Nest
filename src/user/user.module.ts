@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema, User } from './user.schema';
 import { hash, genSalt } from 'bcrypt';
+import { UserInfoModule } from 'src/user-info/user-info.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { hash, genSalt } from 'bcrypt';
         },
       },
     ]),
+    UserInfoModule,
   ],
   providers: [UserService],
   controllers: [UserController],
