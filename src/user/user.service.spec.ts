@@ -8,6 +8,7 @@ import { CreateUserDto } from './Dto/create-user.dto';
 const userModelMock = {
   create: jest.fn(),
   save: jest.fn(),
+  findOne: jest.fn(),
 };
 
 describe('UserService', () => {
@@ -59,6 +60,27 @@ describe('UserService', () => {
         role: 'user',
         userInfo: userInfoId,
       });
+    });
+  });
+
+  describe('findOneByEmail', () => {
+    it('should return a user by email', async () => {
+      const mockedUser = {
+        email: 'user@mail.com',
+        password: 'password',
+      };
+
+      model.findOne.mockResolvedValueOnce(mockedUser as any);
+
+      const result = await service.findOneByEmail('user@mail.com');
+
+      expect(result).toEqual({
+        success: true,
+        code: 200,
+        message: 'User found',
+        data: mockedUser,
+      });
+      expect(model.findOne).toHaveBeenCalledWith({ email: 'user@mail.com' });
     });
   });
 });

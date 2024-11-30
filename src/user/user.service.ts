@@ -39,4 +39,32 @@ export class UserService {
       };
     }
   }
+
+  async findOneByEmail(email: string): Promise<ServiceResponse<User>> {
+    try {
+      const user = await this.userModel.findOne({ email });
+
+      if (!user) {
+        return {
+          success: false,
+          code: 404,
+          message: 'User not found',
+        };
+      }
+
+      return {
+        success: true,
+        code: 200,
+        message: 'User found',
+        data: user,
+      };
+    } catch (error) {
+      this.logger.error('Error finding user by email', error);
+      return {
+        success: false,
+        code: 500,
+        message: 'Error finding user by email',
+      };
+    }
+  }
 }

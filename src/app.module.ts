@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { config } from 'dotenv';
 import { UserModule } from './user/user.module';
 import { UserInfoModule } from './user-info/user-info.module';
+import { AuthModule } from './auth/auth.module';
 config();
 
 @Module({
@@ -14,6 +15,7 @@ config();
     ),
     UserModule,
     UserInfoModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
