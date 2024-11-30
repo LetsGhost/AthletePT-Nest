@@ -28,5 +28,6 @@ import { UserInfoModule } from 'src/user-info/user-info.module';
   ],
   providers: [UserService],
   controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule {}
