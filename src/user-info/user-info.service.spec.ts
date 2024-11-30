@@ -15,4 +15,6 @@ describe('UserInfoService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  // TODO: Maybe write tests in the future, I already done integration tests
 });
