@@ -46,4 +46,12 @@ export class AuthService {
       return false;
     }
   }
+
+  async decodeToken(token: string): Promise<any> {
+    try {
+      return this.jwtService.decode(token);
+    } catch (e) {
+      return null;
+    }
+  }
 }
