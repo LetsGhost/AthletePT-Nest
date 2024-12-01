@@ -4,6 +4,8 @@ import { config } from 'dotenv';
 import { UserModule } from './user/user.module';
 import { UserInfoModule } from './user-info/user-info.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/roles.guard';
 config();
 
 @Module({
@@ -16,6 +18,12 @@ config();
     UserModule,
     UserInfoModule,
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule {}
