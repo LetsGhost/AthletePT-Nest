@@ -20,8 +20,6 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('RolesGuard');
-
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -43,9 +41,6 @@ export class RolesGuard implements CanActivate {
       this.logger.warn('Invalid JWT token');
       throw new UnauthorizedException('Invalid JWT token');
     }
-
-    this.logger.log(`Decoded token: ${JSON.stringify(user)}`);
-    this.logger.log(`Required roles: ${requiredRoles}`);
 
     const hasRole = requiredRoles.some((role) => user.role === role);
     if (!hasRole) {

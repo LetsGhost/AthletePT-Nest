@@ -13,7 +13,6 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    this.logger.log(`Validating user: ${email}`);
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
@@ -28,7 +27,6 @@ export class AuthService {
       return null;
     }
 
-    this.logger.log(`User validated: ${email}`);
     return user;
   }
 
@@ -38,9 +36,6 @@ export class AuthService {
       sub: user._id,
       role: user.role,
     };
-    this.logger.log(
-      `Generating JWT for user: ${user.email} ` + JSON.stringify(payload),
-    );
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -49,7 +44,6 @@ export class AuthService {
   async verifyToken(token: string): Promise<boolean> {
     try {
       this.jwtService.verify(token);
-      this.logger.log('JWT token verified ' + token);
       return true;
     } catch (e) {
       this.logger.warn('Invalid JWT token ' + e);
@@ -60,7 +54,6 @@ export class AuthService {
   async decodeToken(token: string): Promise<any> {
     try {
       return this.jwtService.decode(token);
-      this.logger.log('JWT token decoded ' + this.jwtService.decode(token));
     } catch (e) {
       this.logger.warn('Failed to decode JWT token' + e);
       return null;

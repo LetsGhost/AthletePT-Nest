@@ -1,4 +1,4 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, Logger } from '@nestjs/common';
 import { jwtConstants } from './constants';
@@ -19,7 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload) {
     console.log('JwtdStretgy');
 
-    this.logger.log(`JWT payload: ${JSON.stringify(payload)}`);
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }

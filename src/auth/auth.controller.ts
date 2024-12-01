@@ -24,8 +24,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
-    this.logger.log('Login attempt');
-    this.logger.log(`User object: ${JSON.stringify(req.user)}`);
     const result = await this.authService.login(req.user.data);
     this.logger.log(`Login successful, user: ${req.user.data.email}`);
 
@@ -43,6 +41,7 @@ export class AuthController {
     return req.logout();
   }
 
+  // These are just for testing
   @Roles(Role.User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('profile')

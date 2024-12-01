@@ -37,7 +37,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException('Failed to decode JWT token');
     }
 
-    this.logger.log(`JWT token verified and decoded: ${JSON.stringify(user)}`);
     request.user = user;
 
     return super.canActivate(context) as Promise<boolean>;
