@@ -6,6 +6,7 @@ import { UserInfoModule } from './user-info/user-info.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
+import { ExercisePlanModule } from './exercise-plan/exercise-plan.module';
 config();
 
 @Module({
@@ -18,6 +19,7 @@ config();
     UserModule,
     UserInfoModule,
     AuthModule,
+    ExercisePlanModule,
   ],
   providers: [
     {
