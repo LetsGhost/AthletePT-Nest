@@ -2,9 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ServiceResponse } from 'src/common/interfaces/service-response.interface';
 import { ExercisePlan } from './exercise-plan.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateExercisePlanDto } from './dto/create-exercise-plan.dto';
-import { User } from '../user/user.schema';
 
 @Injectable()
 export class ExercisePlanService {
@@ -13,16 +12,12 @@ export class ExercisePlanService {
   constructor(
     @InjectModel(ExercisePlan.name)
     private readonly exerciseModel: Model<ExercisePlan>,
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
   ) {}
 
   async create(
     CreateExercisePlanDto: CreateExercisePlanDto,
-    userId: string,
   ): Promise<ServiceResponse<ExercisePlan>> {
     try {
-      const userObjectId = new Types.ObjectId(userId);
       const finalExerciseDays = [];
       let exerciseDay = {
         name: '',
@@ -68,11 +63,6 @@ export class ExercisePlanService {
       const createdExercisePlan = await this.exerciseModel.create({
         exerciseDays: finalExerciseDays,
       });
-      await this.userModel.findByIdAndUpdate(
-        userObjectId,
-        { $set: { exercisePlan: createdExercisePlan._id } },
-        { new: true, runValidators: true },
-      );
 
       return {
         success: true,

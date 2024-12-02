@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExercisePlanService } from './exercise-plan.service';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { ExercisePlan } from './exercise-plan.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateExercisePlanDto } from './dto/create-exercise-plan.dto';
-import { User } from '../user/user.schema';
 
 const exercisePlanModelMock = {
   create: jest.fn(),
@@ -16,7 +15,6 @@ const exercisePlanModelMock = {
 describe('ExercisePlanService', () => {
   let service: ExercisePlanService;
   let model: jest.Mocked<Model<ExercisePlan>>;
-  let userModel: jest.Mocked<Model<User>>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +29,6 @@ describe('ExercisePlanService', () => {
 
     service = module.get<ExercisePlanService>(ExercisePlanService);
     model = module.get(getModelToken('ExercisePlan'));
-    userModel = module.get(getModelToken('User'));
   });
 
   it('should be defined', () => {
@@ -40,8 +37,8 @@ describe('ExercisePlanService', () => {
 
   describe('create', () => {
     it('should log the exercise plan', async () => {
-      const mockedData = [
-        [
+      const mockedData = {
+        exerciseDays: [
           {
             name: 'Oberkörper',
             day: 'Dienstag',
@@ -132,7 +129,7 @@ describe('ExercisePlanService', () => {
             ],
           },
         ],
-      ];
+      };
       model.create.mockResolvedValueOnce(mockedData as any);
 
       const createExercisePlanDto: CreateExercisePlanDto = {
@@ -266,8 +263,7 @@ describe('ExercisePlanService', () => {
         ],
       };
 
-      const userId = new Types.ObjectId().toHexString();
-      const result = await service.create(createExercisePlanDto, userId);
+      const result = await service.create(createExercisePlanDto);
 
       expect(result).toEqual({
         success: true,
@@ -275,14 +271,7 @@ describe('ExercisePlanService', () => {
         message: 'Exercise plan created successfully',
         data: mockedData,
       });
-      expect(model.create).toHaveBeenCalledWith({
-        exerciseDays: mockedData,
-      });
-      expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        new Types.ObjectId(userId),
-        { $set: { exercisePlan: result.data._id } },
-        { new: true, runValidators: true },
-      );
+      expect(model.create).toHaveBeenCalledWith(mockedData);
     });
   });
 });

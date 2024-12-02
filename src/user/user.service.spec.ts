@@ -9,6 +9,7 @@ const userModelMock = {
   create: jest.fn(),
   save: jest.fn(),
   findOne: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
 };
 
 describe('UserService', () => {
@@ -81,6 +82,43 @@ describe('UserService', () => {
         data: mockedUser,
       });
       expect(model.findOne).toHaveBeenCalledWith({ email: 'user@mail.com' });
+    });
+  });
+
+  describe('updateUserReference', () => {
+    it('should update user reference', async () => {
+      const mockedUser = {
+        email: 'email@mail.com',
+        password: 'password',
+        userInfo: new Types.ObjectId('674b35a0986bacefaa3b4a12'),
+      };
+
+      model.findByIdAndUpdate.mockResolvedValueOnce(mockedUser as any);
+
+      const updateUserReferenceDto = {
+        userId: '674b35a0986bacefaa3d4a12',
+        referenceName: 'userInfo',
+        referenceId: new Types.ObjectId('674b35a0986bacefaa3b4a12'),
+      };
+
+      const result = await service.updateUserReference(updateUserReferenceDto);
+
+      expect(result).toEqual({
+        success: true,
+        code: 200,
+        message: 'User updated successfully',
+        data: mockedUser,
+      });
+      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
+        new Types.ObjectId(updateUserReferenceDto.userId),
+        {
+          $set: {
+            [updateUserReferenceDto.referenceName]:
+              updateUserReferenceDto.referenceId,
+          },
+        },
+        { new: true, runValidators: true },
+      );
     });
   });
 });
