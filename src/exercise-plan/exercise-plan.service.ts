@@ -2,8 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ServiceResponse } from 'src/common/interfaces/service-response.interface';
 import { ExercisePlan } from './exercise-plan.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateExercisePlanDto } from './dto/create-exercise-plan.dto';
+import { User } from '../user/user.schema';
 
 @Injectable()
 export class ExercisePlanService {
@@ -12,32 +13,40 @@ export class ExercisePlanService {
   constructor(
     @InjectModel(ExercisePlan.name)
     private readonly exerciseModel: Model<ExercisePlan>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
   ) {}
 
   async create(
     CreateExercisePlanDto: CreateExercisePlanDto,
+    userId: string,
   ): Promise<ServiceResponse<ExercisePlan>> {
     try {
-      const finalExercisePlan = [];
+      const userObjectId = new Types.ObjectId(userId);
+      const finalExerciseDays = [];
       let exerciseDay = {
         name: '',
-        tag: '',
+        day: '',
         exercises: [],
       };
       for (const exercise of CreateExercisePlanDto.exercisePlan) {
         if (exercise[1] === 'Name') {
           if (exerciseDay.name) {
-            finalExercisePlan.push(exerciseDay);
+            finalExerciseDays.push(exerciseDay);
           }
           exerciseDay = {
-            name: exercise[1] as string,
-            tag: exercise[2] as string,
+            name: '',
+            day: '',
             exercises: [],
           };
           continue;
         }
 
         if (exercise[1] !== 'Name' && exercise[1] !== 'Tag') {
+          if (!exerciseDay.name) {
+            exerciseDay.name = exercise[1] as string;
+            exerciseDay.day = exercise[2] as string;
+          }
           exerciseDay.exercises.push({
             name: exercise[3] as string,
             weight: exercise[4] as number,
@@ -53,9 +62,24 @@ export class ExercisePlanService {
       }
 
       if (exerciseDay.name) {
-        finalExercisePlan.push(exerciseDay);
+        finalExerciseDays.push(exerciseDay);
       }
-      console.log(JSON.stringify(finalExercisePlan));
+
+      const createdExercisePlan = await this.exerciseModel.create({
+        exerciseDays: finalExerciseDays,
+      });
+      await this.userModel.findByIdAndUpdate(
+        userObjectId,
+        { $set: { exercisePlan: createdExercisePlan._id } },
+        { new: true, runValidators: true },
+      );
+
+      return {
+        success: true,
+        code: 201,
+        message: 'Exercise plan created successfully',
+        data: createdExercisePlan,
+      };
     } catch (error) {
       this.logger.error('Error creating exercise plan', error.stack);
       return {
