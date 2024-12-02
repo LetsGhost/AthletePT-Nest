@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ServiceResponse } from 'src/common/interfaces/service-response.interface';
 import { CreateUserDto } from './Dto/create-user.dto';
+import { UpdateUserReferenceDto } from './Dto/update-user-reference.dto';
 
 @Injectable()
 export class UserService {
@@ -64,6 +65,47 @@ export class UserService {
         success: false,
         code: 500,
         message: 'Error finding user by email',
+      };
+    }
+  }
+
+  async updateUserReference(
+    updateUserReferenceDto: UpdateUserReferenceDto,
+  ): Promise<ServiceResponse<User>> {
+    try {
+      const userObjectId = new Types.ObjectId(updateUserReferenceDto.userId);
+      const update = {
+        $set: {
+          [updateUserReferenceDto.referenceName]:
+            updateUserReferenceDto.referenceId,
+        },
+      };
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        userObjectId,
+        update,
+        { new: true, runValidators: true },
+      );
+
+      if (!updatedUser) {
+        return {
+          success: false,
+          code: 404,
+          message: 'User not found',
+        };
+      }
+
+      return {
+        success: true,
+        code: 200,
+        message: 'User updated successfully',
+        data: updatedUser,
+      };
+    } catch (error) {
+      this.logger.error('Error updating user reference', error);
+      return {
+        success: false,
+        code: 500,
+        message: 'Error updating user reference',
       };
     }
   }
