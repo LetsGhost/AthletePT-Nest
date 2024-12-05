@@ -1,31 +1,56 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+export type ProtocolDocument = HydratedDocument<Protocol>;
+
+@Schema()
+export class ProtocolExercise {
+  _id: Types.ObjectId;
+
+  @Prop()
+  exercises: string;
+
+  @Prop()
+  weight: number[];
+
+  @Prop()
+  repetitions: number[];
+}
+
+@Schema()
+export class ProtocolExerciseDay {
+  _id: Types.ObjectId;
+
+  @Prop()
+  dayNumber: number;
+
+  @Prop()
+  type: string;
+
+  @Prop()
+  comment: {
+    scale: number;
+    notes: string;
+  };
+
+  @Prop({ type: [ProtocolExercise] })
+  exercises: ProtocolExercise[];
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
+}
 
 @Schema({
   timestamps: true,
 })
-export class User {
+export class Protocol {
   _id: Types.ObjectId;
 
-  @Prop({ required: true, unique: true, lowercase: true })
-  email: string;
-
-  @Prop({ required: true })
-  password: string;
-
-  @Prop({ required: true })
-  role: 'admin' | 'user';
+  @Prop({ type: [ProtocolExerciseDay] })
+  exerciseDays: ProtocolExerciseDay[];
 
   @Prop({ default: Date.now })
   createdAt: Date;
-
-  @Prop({ type: Types.ObjectId, ref: 'UserInfo' })
-  userInfo: { type: Types.ObjectId; ref: 'UserInfo' };
-
-  @Prop({ type: Types.ObjectId, ref: 'ExercisePlan' })
-  exercisePlans: { type: Types.ObjectId; ref: 'ExercisePlan' };
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const ProtocolSchema = SchemaFactory.createForClass(Protocol);

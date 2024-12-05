@@ -25,7 +25,10 @@ export class User {
   userInfo: { type: Types.ObjectId; ref: 'UserInfo' };
 
   @Prop({ type: Types.ObjectId, ref: 'ExercisePlan' })
-  exercisePlans: { type: Types.ObjectId; ref: 'ExercisePlan' };
+  exercisePlan: { type: Types.ObjectId; ref: 'ExercisePlan' };
+
+  @Prop({ type: Types.ObjectId, ref: 'Protocol' })
+  protocol: { type: Types.ObjectId; ref: 'Protocol' };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
