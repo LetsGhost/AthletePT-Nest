@@ -20,6 +20,7 @@ export class ExercisePlanController {
   ) {
     const result = await this.exercisePlanService.create(createExercisePlanDto);
 
+    // Update the user's reference to the new exercise plan
     const updateUserReferenceDto = new UpdateUserReferenceDto();
     updateUserReferenceDto.referenceId = result.data._id;
     updateUserReferenceDto.referenceName = 'exercisePlan';
