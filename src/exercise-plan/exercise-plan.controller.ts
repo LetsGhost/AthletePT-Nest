@@ -1,8 +1,17 @@
-import { Controller, Logger, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Logger,
+  Post,
+  Body,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ExercisePlanService } from './exercise-plan.service';
 import { UserService } from 'src/user/user.service';
-import { CreateExercisePlanDto } from './dto/create-exercise-plan.dto';
 import { UpdateUserReferenceDto } from 'src/user/dto/update-user-reference.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as excelJs from 'exceljs';
 
 @Controller('exercise-plan')
 export class ExercisePlanController {
@@ -14,11 +23,24 @@ export class ExercisePlanController {
   ) {}
 
   @Post('create/:userId')
+  @UseInterceptors(FileInterceptor('excelFile'))
   async createExercisePlan(
-    @Body('exercisePlan') createExercisePlanDto: CreateExercisePlanDto,
+    @UploadedFile() excelFile: Express.Multer.File,
     @Param('userId') userId: string,
   ) {
-    const result = await this.exercisePlanService.create(createExercisePlanDto);
+    const workbook = new excelJs.Workbook();
+    await workbook.xlsx.load(excelFile.buffer);
+    const worksheet = workbook.getWorksheet(1);
+
+    const data = [];
+    worksheet.eachRow((row) => {
+      const rowData = row.values;
+      data.push(rowData);
+    });
+
+    const result = await this.exercisePlanService.create({
+      exercisePlan: data,
+    });
 
     // Update the user's reference to the new exercise plan
     const updateUserReferenceDto = new UpdateUserReferenceDto();

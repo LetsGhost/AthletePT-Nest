@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
 import { ExercisePlanModule } from './exercise-plan/exercise-plan.module';
 import { WarmupModule } from './warmup/warmup.module';
+import { ProtocolModule } from './protocol/protocol.module';
 config();
 
 @Module({
@@ -22,6 +23,7 @@ config();
     AuthModule,
     ExercisePlanModule,
     WarmupModule,
+    ProtocolModule,
   ],
   providers: [
     {
