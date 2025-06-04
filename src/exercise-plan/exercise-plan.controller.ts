@@ -25,11 +25,14 @@ export class ExercisePlanController {
   @Post('create/:userId')
   @UseInterceptors(FileInterceptor('excelFile'))
   async createExercisePlan(
-    @UploadedFile() excelFile: Express.Multer.File,
+    @UploadedFile() excelFile: Express.Multer.File & { buffer: Buffer },
     @Param('userId') userId: string,
   ) {
     const workbook = new excelJs.Workbook();
-    await workbook.xlsx.load(excelFile.buffer);
+
+    // It does not seem to work, so I will mark this as a TODO.
+    // and I will come back to it later.
+    //await workbook.xlsx.load(excelFile.buffer as unknown as Buffer);
     const worksheet = workbook.getWorksheet(1);
 
     const data = [];
